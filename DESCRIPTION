@@ -10,7 +10,8 @@ LazyData: true
 Imports: tidyverse,
     xml2,
     rvest,
-    abjMaps
+    abjMaps,
+    magrittr
 RoxygenNote: 6.1.0
 Suggests: knitr,
     rmarkdown
