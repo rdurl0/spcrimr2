@@ -1,3 +1,14 @@
+#' Pipe operator
+#'
+#' See \code{\link[magrittr]{\%>\%}} for more details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+NULL
 
 #'Extract data from SSP
 #'
@@ -18,8 +29,9 @@
 #' 
 #'@references Web scraping do site da Secretaria de Seguranca Publica de Sao Paulo.
 #' \link[www.curso-r.com/blog/2017/05/19/2017-05-19-scrapper-ssp/]{Blog do Curso R}. 2017. ultimo acesso em: 11/07/2018
-#' @references \link[www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx]{Secretaria de Seguranca Publica do estado de Sao Paulo}
-
+#'
+#'@references \link[www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx]{Secretaria de Seguranca Publica do estado de Sao Paulo}
+#' 
 download_table_sp <- function(ano, municipio,
                               type = c("ctl00$conteudo$btnPolicial", "ctl00$conteudo$btnMensal")){
 
@@ -74,6 +86,10 @@ download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
 #'
 #'@return the index number of the city
 #'
+#'#' @importFrom magrittr %>%
+#' @name %>%
+#' @rdname pipe
+#' @export
 municipio <- function(x){
   
   abjMaps::d_sf[[2]][[1]] %>% 
