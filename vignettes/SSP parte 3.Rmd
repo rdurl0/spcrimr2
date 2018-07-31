@@ -1,0 +1,345 @@
+---
+ttle: "_Importando dados_: SSP (parte 3)"
+subtitle: "_Web scraping_ do site da SSP: unindo tabelas anuais em um único `data.frame`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SSP parte 3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+***
+
+```{r message=FALSE, warning=TRUE}
+library(tidyverse)
+library(readr)
+library(DiagrammeR)
+```
+
+***
+
+## Resumo
+
+Aqui os dados são preparados para análise.
+
+* Consolidando os arquivos extraídos no _site_ SSP por ano em um único `data.frame`.
+* Limpando os nomes de variáveis, remove pontos e caractéres especiais.
+* Automatizando seleção de variáveis com `purrr::map` e com `select_ssp()`.
+
+```{r eval=T, echo=F, results='asis'}
+
+grViz("
+
+digraph boxes_and_circles {
+
+  # add node statements
+  node [shape = box,
+        fontsize = 8,
+        fontname = Helvetica]
+  SSP;
+ 'N° de \n ocorrências criminais';
+ 'Dados de \n produtividade policial';
+ 'ano20xx.rds' [fontname = courier];
+ 'ano_pol_20xx.rds' [fontname = courier];
+ 'dados_ssp.rds' [fontname = courier,
+                  color    = SeaGreen];
+ 'select_ssp()' [fontname = courier,
+                  color   = SeaGreen];
+
+  # add edge statements
+  SSP -> 'N° de \n ocorrências criminais';
+  SSP -> 'Dados de \n produtividade policial';
+ 'N° de \n ocorrências criminais' -> 'ano20xx.rds'
+        [label     = '`ctl00$conteudo$btnMensal` \n (2002-14)',
+         fontname  = courier,
+         fontsize  = 6, 
+         fontcolor = blue];
+ 'Dados de \n produtividade policial' -> 'ano_pol_20xx.rds' 
+        [label     = '`ctl00$conteudo$btnPolicial` \n (2002-14)',
+         fontname  = courier,
+         fontsize  = 6,
+         fontcolor = blue];
+ 'ano_pol_20xx.rds' -> 'dados_ssp.rds'
+ 'ano20xx.rds' -> 'dados_ssp.rds'
+ 'dados_ssp.rds' -> 'select_ssp()' [color = SeaGreen]
+}
+      
+      
+      ")
+```
+
+***
+
+## Preparando ambiente
+
+
+O objetivo é preparar os arquivos com as tabelas anuais para análise. Para isso vamos consolidar os arquivos "limpos" _(tidy)_ em um único `data.frame`.
+
+Os dados estão separados por ano e cada arquivo é um `data.frame` com informações de ocorrências de crimes e de produtividade policial para os 645 municípios do estado de São Paulo:
+
+```{r echo=FALSE}
+my_directory_path <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/economia_do_crime/raw_data"
+```
+
+
+```{r message=FALSE, warning=TRUE}
+dir(my_directory_path)[1:26]
+```
+
+***
+
+__Cada tipo de crime (ou de indicador de prod. policial) deve ser uma _coluna_ e cada município deve ser uma _linha_.__
+
+
+Além disso, se queremos analisar os registros de crimes (ou os indicadores de produtividade policial), precisamos tratá-los como variáveis. Por outro lado, também precisamos tratar cada município como uma observação da variável (crime ou prod. policial). O tamanho de cada tabela deve ter, portanto, 645 observações (linhas)
+
+* A coluna `Natureza` contém o conjunto de variáveis que nos interessa. Elas serão as colunas.
+* A coluna `municipio` vai de `1:645`. Basta colapsá-la teremos as 645 observações que queremos.
+
+
+```{r}
+read_rds(paste0(my_directory_path, "/ano2005")) %>% select(Natureza, Total, municipio, ano)
+```
+
+***
+
+
+## Inserindo o nome dos municípios
+
+O objeto abaixo é um vetor de caractéres com os nomes de cada município do estado de São Paulo. É mantida a ordem alfabética para parear com o índice do município (`1:645`):
+
+```{r message=FALSE, warning=TRUE}
+nome_munics <- abjMaps::d_sf[[2]][[1]] %>% 
+  arrange(municipio) %>%
+  select(municipio) %>%
+  glimpse()
+```
+
+****
+
+
+## Transformando a tabela
+
+O pacote `purrr` nos ajuda a fazer a operação para todas as tabelas simultâneamente.
+
+### Ocorrências de crimes
+
+- __Tidy__: A série vai de 2002 até 2014. O código abaixo vai pegar cada tabela `ano20xx` da pasta `/raw_data` e fazer a devida limpeza, padronizando nomes e número de colunas:
+
+- O objeto `ocorrencias crimes` é o que vai armazenar as tabelas de ocorrencias de crime em um só `data.frame`.
+
+```{r message=FALSE, warning=TRUE}
+# o loop começa definindo o obj e selecionando os nomes dos arquivos...
+ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directory_path, "/", .x)) %>%
+  
+  # ...lê os arquivos...
+  map(~readRDS(.x)) %>% 
+  
+  # ...ordena, seleciona colunas, remove caracteres indesejados...
+  map(~arrange(.x, Natureza, municipio)) %>%
+  map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%
+  map(~mutate(.x, #nm_municipio = nm_municipio,
+              crime = crime %>%
+                tolower() %>%
+                str_remove_all("[:punct:]") %>% 
+                str_replace_all("nº de ", "") %>%
+                str_replace_all(" 1", "") %>%
+                str_replace_all(" 2", "") %>%
+                str_replace_all(" 3", "") %>%
+                str_replace_all(" 4", "") %>%
+                str_squish() %>%
+                str_trim('both') %>%
+                str_replace_all("[:blank:]", "_") %>%
+                str_replace_all("í", "i") %>%
+                str_replace_all("ã", "a") %>%
+                str_replace_all("â", "a"))) %>%
+  
+  # ...spread: cada tipo de crime vira uma variável...
+  map(~spread(.x, crime, total)) %>%
+  
+  # ...pareando com os nomes dos municípios (obj: nome_munics)...
+  map2(., nome_munics, ~mutate(.x, nm_municip = .y)) %>%
+
+  # ...esta variável não tem em todas as tabelas, tem q excluir.
+  modify_at(.x = ., .at = c(seq(8)), .f = ~select(.x, -lesao_corporal_seguida_de_morte)) %>%
+  #???modify_at(.at = c(9:13), .f = ~mutate(.x, lesao_corporal_seguida_de_morte = c(rep(0, 645)))) %>%
+  map(~select(.x, nm_municip, everything()))
+```
+
+Temos como resultado um objeto `list` com 13 `data.frames`.
+
+```{r}
+ocorrencias_crimes %>% str(max.level = 1)
+```
+
+
+Uma breve olhada em um deles e vemos que cada tabela tem 645 observações (uma para cada município) e as variáveis da coluna `Natureza` agora são colunas. A função abaixo junta todos os anos em uma só tabela, o número de observações aumenta para $64\times13=8.385$:
+
+```{r message=FALSE, warning=TRUE}
+ocorrencias_crimes <- reduce(ocorrencias_crimes, ~bind_rows(.x, .y))
+
+ocorrencias_crimes
+
+```
+
+***
+
+### Produtividade policial
+
+Repetimos o processo para os dados de produtividade policial.
+
+- __Tidy__: A série vai de 2002 até 2014. O código abaixo vai pegar cada tabela `ano_pol_20xx` da pasta `/raw_data` e fazer a devida limpeza, padronizando nomes e número de colunas.
+
+- O objeto `produtividade_policial` é o que vai armazenar as tabelas de ocorrencias de crime em um só `data.frame`.
+
+```{r message=FALSE, warning=TRUE}
+# loop
+produtividade_policial  <- map(dir(my_directory_path)[1:13], ~ paste0(my_directory_path, "/", .x)) %>%
+  map(~read_rds(.x)) %>% 
+  map(~arrange(.x, Natureza, municipio)) %>% 
+  map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%
+  map(~mutate(.x, #nm_municipio = nm_municipio,
+              crime = crime %>%
+                tolower() %>%
+                str_remove_all("[:punct:]") %>% 
+                str_replace_all("nº de ", "") %>%
+                str_replace_all(" 1", "") %>%
+                str_replace_all(" 2", "") %>%
+                str_replace_all(" 3", "") %>%
+                str_replace_all(" 4", "") %>%
+                str_squish() %>%
+                str_trim('both') %>%
+                str_replace_all("[:blank:]", "_") %>%
+                str_replace_all("í", "i") %>%
+                str_replace_all("ã", "a") %>%
+                str_replace_all("â", "a"))) %>%
+  map(~spread(.x, crime, total)) %>%
+  map2(., nome_munics, ~mutate(.x, nm_municip = .y)) %>%
+  map(~select(.x, nm_municip, everything()))
+```
+
+```{r}
+produtividade_policial %>% str(max.level = 1)
+```
+
+A função abaixo junta todos os anos em uma só tabela, o número de observações aumenta para $64\times13=8.385$:
+
+```{r}
+produtividade_policial <- reduce(produtividade_policial, ~bind_rows(.x, .y))
+
+produtividade_policial
+```
+
+
+## Juntando as bases
+
+Um `inner_join` para consolidar uma tabela única.
+
+```{r}
+painel <- inner_join(produtividade_policial,
+                     ocorrencias_crimes,
+                     by=c("nm_municip", "municipio", "ano"))
+
+painel %>% glimpse()
+```
+
+Finalmente, os dados são salvos separadamente:
+
+```{r}
+#write_rds(painel, "./data/dados_ssp")
+```
+
+
+A transformação nos nomes das variáveis:
+
+```{r echo=FALSE}
+variaveis <- c(
+  colnames(produtividade_policial)[4:length(produtividade_policial)],
+  colnames(ocorrencias_crimes)[4:length(ocorrencias_crimes)]
+)
+
+titulos   <- c("Nº DE ARMAS DE FOGO APREENDIDAS",
+               "Nº DE FLAGRANTES LAVRADOS",
+               "Nº DE INFRATORES APREENDIDOS EM FLAGRANTE",
+               "Nº DE INFRATORES APREENDIDOS POR MANDADO",
+               "OCORRÊNCIAS DE APREENSÃO DE ENTORPECENTES(*)",
+               "OCORRÊNCIAS DE PORTE DE ENTORPECENTES",
+               "OCORRÊNCIAS DE PORTE ILEGAL DE ARMA",
+               "OCORRÊNCIAS DE TRÁFICO DE ENTORPECENTES",
+               "Nº DE PESSOAS PRESAS EM FLAGRANTE",
+               "Nº DE PESSOAS PRESAS POR MANDADO",
+               "Nº DE PRISÕES EFETUADAS",
+               "TOT. DE INQUÉRITOS POLICIAIS INSTAURADOS",
+               "Nº DE VEÍCULOS RECUPERADOS",
+               "FURTO DE VEÍCULO",
+               "FURTO - OUTROS",
+               "HOMICÍDIO CULPOSO OUTROS",
+               "Nº DE VÍTIMAS EM HOMICÍDIO DOLOSO POR ACIDENTE DE TRÂNSITO",
+               "HOMICÍDIO DOLOSO (2)",
+               "HOMICÍDIO DOLOSO POR ACIDENTE DE TRÂNSITO",
+               "LATROCÍNIO",
+               "LESÃO CORPORAL CULPOSA - OUTRAS",
+               "LESÃO CORPORAL CULPOSA POR ACIDENTE DE TRÂNSITO",
+               "LESÃO CORPORAL DOLOSA",
+               "ROUBO A BANCO",
+               "ROUBO DE CARGA",
+               "ROUBO DE VEÍCULO",
+               "TENTATIVA DE HOMICÍDIO",
+               "TOTAL DE ESTUPRO (4)",
+               "TOTAL DE ROUBO - OUTROS (1)",
+               "Nº DE VÍTIMAS EM HOMICÍDIO DOLOSO (3)",
+               "Nº DE VÍTIMAS EM HOMICÍDIO DOLOSO POR ACIDENTE DE TRÂNSITO",
+               "Nº DE VÍTIMAS EM LATROCÍNIO"
+               )
+
+tibble(variaveis_tidy = variaveis,
+       variaveis_raw  = titulos) %>% kableExtra::kable()
+
+```
+
+***
+## Função `select_ssp()`
+
+```{r eval = FALSE}
+
+# TODO !
+
+ssp <- function(x) {
+  read_rds("./data/dados_ssp") %>%
+  select(municipio, ano, x) %>%
+  mutate(ano=as.factor(ano),
+         municipio=as.factor(municipio))
+}
+
+ssp("homicidio_doloso")
+```
+
+***
+
+
+## Visualizando rapidamente
+
+Só para veridicar como ficou, vamos dar uma espiada nos dados. :
+
+```{r fig.align='center', fig.height=65, fig.width=12}
+graficos <- map2(variaveis,
+                 titulos, 
+                 ~{ggplot(painel %>% filter(nm_municip == "SAO PAULO")) + 
+                    geom_line(aes_string(x=c(2002:2014),
+                                        y=paste0(.x))) +
+                    theme_minimal() +
+                    ggtitle(.y)
+             })
+
+gridExtra::grid.arrange(grobs = graficos, nrow=16, ncol=2)
+```
+
+
+FIM!
