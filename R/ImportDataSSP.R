@@ -1,15 +1,3 @@
-#' Pipe operator
-#'
-#' See \code{\link[magrittr]{\%>\%}} for more details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-NULL
-
 #'Extract data from SSP
 #'
 #'Extract data avaliable in SSP's website: (1) number of criminal ocurrencies (2) police productivity indicators,
@@ -86,10 +74,6 @@ download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
 #'
 #'@return the index number of the city
 #'
-#'#' @importFrom magrittr %>%
-#' @name %>%
-#' @rdname pipe
-#' @export
 municipio <- function(x){
   
   abjMaps::d_sf[[2]][[1]] %>% 
