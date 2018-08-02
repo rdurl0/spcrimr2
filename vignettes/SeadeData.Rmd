@@ -1,0 +1,95 @@
+---
+title: "Tidy SEADE data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  include = TRUE
+)
+```
+
+### Resumo
+
+```{r eval=T, echo=F, results='asis', fig.align='center'}
+library("DiagrammeR")
+grViz("
+
+digraph boxes_and_circles {
+
+  # add node statements
+    node [shape = box,
+          fontsize = 8,
+          fontname = Helvetica]
+
+  SEADE [color=blue];
+  '.csv';
+  '.rds'  [color=green];
+
+
+  # add edge statements
+  SEADE -> '.csv' [label = '   coleta',
+                   fontname =Helvetica,
+                   fontsize=6,
+                   fontcolor=blue]
+  '.csv' -> '.rds' [label = '   limpeza',
+                   fontname =Helvetica,
+                   fontsize=6,
+                   fontcolor=blue]
+
+}
+      
+      
+      ")
+```
+
+### Parâmetros
+
+```{r echo = FALSE}
+file_name <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/economia_do_crime/raw_data/seade_pop.csv" # "./raw_data/seade_pop.csv"
+```
+
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+ano_inicial <- 1980 #2002
+ano_final   <- 2018 #2014
+```
+
+```{r}
+variables_names_seade_pop <- read.csv2(file_name, header=FALSE, stringsAsFactors=FALSE)[1,] %>%
+  gather() %>%
+  select(descricao = value, var_id = key) %>%
+  mutate(var_id = str_replace(var_id, "V", "X"))
+
+#devtools::use_data(variables_names_seade_pop)
+```
+
+### Carrega a tibble
+
+Lê o .csv, pegando somente a matriz de dados
+
+```{r}
+seade_raw <- read_csv2(file_name,
+                       col_names = F,
+                       skip = 1,
+                       na = c("-", "...", "x", "e", "NA"))
+
+seade_pop <- seade_raw %>%
+  as_tibble() %>%
+  mutate(cd_geocmu = as.factor(X38),
+         ano       = as.factor(X2)) %>%
+  select(-X2) %>%
+  arrange(ano, X38) %>%
+  select(ano, everything())
+
+Encoding(seade_pop$X1) <- "Latin1"
+
+#devtools::use_data(seade_pop)
+```
