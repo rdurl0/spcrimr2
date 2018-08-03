@@ -49,6 +49,8 @@ digraph boxes_and_circles {
       ")
 ```
 
+****
+
 ### Parâmetros
 
 ```{r echo = FALSE}
@@ -68,8 +70,10 @@ variables_names_seade_pop <- read.csv2(file_name, header=FALSE, stringsAsFactors
   select(descricao = value, var_id = key) %>%
   mutate(var_id = str_replace(var_id, "V", "X"))
 
-#devtools::use_data(variables_names_seade_pop)
+#devtools::use_data(variables_names_seade_pop, overwrite = TRUE)
 ```
+
+***
 
 ### Carrega a tibble
 
@@ -91,5 +95,21 @@ seade_pop <- seade_raw %>%
 
 Encoding(seade_pop$X1) <- "Latin1"
 
-#devtools::use_data(seade_pop)
+ages <- c(paste0(seq(0, 70, by=5), "a", seq(4, 74, by=5)), "75mais")
+
+c("pop_", "pop_msc_", "pop_fem_") %>% map_dfc(~paste0(.x, ages)) %>%
+  mutate(pop_tot = V1, pop_msc = V2, pop_fem = V3)-> ages
+
+seade_pop %>%
+  rename_at(vars(X4:X19), ~ages$pop_tot) %>%
+  rename_at(vars(X21:X36), ~ages$pop_msc) %>%
+  rename_at(vars(X38:X53), ~ages$pop_fem) %>%
+  rename(municipio = X1,
+         pop_total = X3,
+         pop_msc   = X20,
+         pop_fem   = X37,
+         cd_geocmu = X54) -> seade_pop
+
+#devtools::use_data(seade_pop, overwrite = TRUE)
+
 ```

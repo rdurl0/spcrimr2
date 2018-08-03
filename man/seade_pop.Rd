@@ -20,7 +20,16 @@
 seade_pop
 }
 \description{
-A dataset containing resident population in Sao Paulo state by city (645) sex and age. The data was collected in 
+A dataset containing resident population in Sao Paulo state by city sex and age. The data was collected in 
 Fundacao SEADE's website.
+}
+\details{
+Note: Sao Paulo state increased the number of cities between 1980 and 1996 (run the example to see these changes)
+}
+\examples{
+seade_pop \%>\%
+  na.omit() \%>\%
+  group_by(ano) \%>\%
+  summarise(qtde_municipios = n())
 }
 \keyword{datasets}

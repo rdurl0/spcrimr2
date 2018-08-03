@@ -13,7 +13,7 @@ municipio(x)
 the index number of the city
 }
 \description{
-Function to find the city \emph[index] in Sao Paulo state.
+Function to find the city \emph{index} in Sao Paulo state.
 }
 \details{
 Capital letters only, separated by spaces and without accents

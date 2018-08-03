@@ -66,7 +66,7 @@ download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
 
 #'Get city index by it's name
 #'
-#'Function to find the city \emph[index] in Sao Paulo state.
+#'Function to find the city \emph{index} in Sao Paulo state.
 #'
 #'Capital letters only, separated by spaces and without accents
 #'
