@@ -85,12 +85,12 @@ seade_raw <- read_csv2(file_name,
                        skip = 1,
                        na = c("-", "...", "x", "e", "NA"))
 
-seade_pop <- seade_raw %>%
+seade_pop <- seade_raw %>% 
   as_tibble() %>%
-  mutate(cd_geocmu = as.factor(X38),
+  mutate(cd_geocmu = as.factor(X54),
          ano       = as.factor(X2)) %>%
-  select(-X2) %>%
-  arrange(ano, X38) %>%
+  select(-X2, -X54) %>%
+  arrange(ano, cd_geocmu) %>%
   select(ano, everything())
 
 Encoding(seade_pop$X1) <- "Latin1"
@@ -107,9 +107,9 @@ seade_pop %>%
   rename(municipio = X1,
          pop_total = X3,
          pop_msc   = X20,
-         pop_fem   = X37,
-         cd_geocmu = X54) -> seade_pop
+         pop_fem   = X37) -> seade_pop
 
-#devtools::use_data(seade_pop, overwrite = TRUE)
+devtools::use_data(seade_pop, overwrite = TRUE)
+devtools::use_data_raw()
 
 ```
