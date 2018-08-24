@@ -107,9 +107,9 @@ seade_pop %>%
   rename(municipio = X1,
          pop_total = X3,
          pop_msc   = X20,
-         pop_fem   = X37) -> seade_pop
+         pop_fem   = X37) -> seade_pop_cities
 
-#devtools::use_data(seade_pop, overwrite = TRUE)
+#devtools::use_data(seade_pop_cities, overwrite = TRUE)
 ```
 
 ***
@@ -128,7 +128,7 @@ faixa_etaria <- bind_rows(faixa_etaria, faixa_etaria) %>% select(faixa_etaria)
 faixa_etaria
 
 #
-seade_pop_faixa_etaria <- seade_pop %>%
+seade_pop_state <- seade_pop_cities %>%
   select(ano, starts_with("pop_msc_"), starts_with("pop_fem_")) %>% 
   group_by(ano) %>%
   summarise_all(sum, na.rm = TRUE) %>%
@@ -139,7 +139,7 @@ seade_pop_faixa_etaria <- seade_pop %>%
          ano = rep(lubridate::year(seq(as.POSIXct("1980-01-01"), by = "year", length.out = 39)), 32),
          cod = as.factor(cod))
 
-#devtools::use_data(seade_pop_faixa_etaria)
+#devtools::use_data(seade_pop_state)
 ```
 
 ***
@@ -147,9 +147,9 @@ seade_pop_faixa_etaria <- seade_pop %>%
 ### Inspeciona tibbles
 
 ```{r collapse = FALSE}
-seade_pop
 seade_pop_raw
 seade_pop_variables_names
-seade_pop_faixa_etaria
+seade_pop_cities
+seade_pop_state
 ```
 
