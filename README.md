@@ -14,10 +14,10 @@ devtools::install_github("rdurl0/spcrimr")
 
 ### Load datasets
 
-The population counts from 1980 to 2018 was extracted from [SEADE's](https://www.seade.gov.br/) website. You can load it with the following code:
+The population counts from 1980 to 2018 was extracted from [SEADE's](https://www.seade.gov.br/) website. Here I have data form all the cities by gender and by year. You can load it with the following code:
 
 ```r
-seade_pop_municip # to load the data.frame
+seade_pop_cities # to load the data.frame
 ```
 
 ### Some useful tools
