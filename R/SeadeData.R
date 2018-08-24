@@ -39,4 +39,4 @@
 #'   \item{Cod. IBGE (\code{cd_geocmu})}{Geo code}
 #' }
 #' @source \url{https://www.seade.gov.br/}
-"variables_names_seade_pop"
+"seade_pop_variables_names"

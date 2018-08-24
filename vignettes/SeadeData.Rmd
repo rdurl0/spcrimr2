@@ -54,7 +54,7 @@ digraph boxes_and_circles {
 ### Parâmetros
 
 ```{r echo = FALSE}
-file_name <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/economia_do_crime/raw_data/seade_pop.csv" # "./raw_data/seade_pop.csv"
+file_name <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/economia_do_crime/raw_data/seade_pop.csv"
 ```
 
 
@@ -65,27 +65,27 @@ ano_final   <- 2018 #2014
 ```
 
 ```{r}
-variables_names_seade_pop <- read.csv2(file_name, header=FALSE, stringsAsFactors=FALSE)[1,] %>%
+seade_pop_variables_names <- read.csv2(file_name, header=FALSE, stringsAsFactors=FALSE)[1,] %>%
   gather() %>%
   select(descricao = value, var_id = key) %>%
   mutate(var_id = str_replace(var_id, "V", "X"))
 
-#devtools::use_data(variables_names_seade_pop, overwrite = TRUE)
+#devtools::use_data(seade_pop_variables_names)
 ```
 
 ***
 
-### Carrega a tibble
+### Carrega a tibble: População residente por município, ano, sexo e faixa etária
 
 Lê o .csv, pegando somente a matriz de dados
 
 ```{r}
-seade_raw <- read_csv2(file_name,
+seade_pop_raw <- read_csv2(file_name,
                        col_names = F,
                        skip = 1,
                        na = c("-", "...", "x", "e", "NA"))
 
-seade_pop <- seade_raw %>% 
+seade_pop <- seade_pop_raw %>% 
   as_tibble() %>%
   mutate(cd_geocmu = as.factor(X54),
          ano       = as.factor(X2)) %>%
@@ -109,7 +109,47 @@ seade_pop %>%
          pop_msc   = X20,
          pop_fem   = X37) -> seade_pop
 
-devtools::use_data(seade_pop, overwrite = TRUE)
-devtools::use_data_raw()
-
+#devtools::use_data(seade_pop, overwrite = TRUE)
 ```
+
+***
+
+### Carrega a tibble: População residente total por ano, sexo e faixa etária
+
+```{r}
+#
+y_labs <- as.character(c(seq(2500, 0, -250), seq(250, 2500, 250)))
+x_labs <- c(paste(seq(0, 70, by=5), "até", seq(4, 74, by=5)), "75 e mais")
+
+#
+faixa_etaria <- tibble(faixa_etaria = rep(x_labs, 39), id = rep(seq(1,16), 39)) %>%
+  arrange(id)
+faixa_etaria <- bind_rows(faixa_etaria, faixa_etaria) %>% select(faixa_etaria)
+faixa_etaria
+
+#
+seade_pop_faixa_etaria <- seade_pop %>%
+  select(ano, starts_with("pop_msc_"), starts_with("pop_fem_")) %>% 
+  group_by(ano) %>%
+  summarise_all(sum, na.rm = TRUE) %>%
+  gather(key = ano, value = populacao) %>%
+  rename(cod = ano) %>%
+  mutate(genero = as.factor(c(rep("População Masculina", 624), rep("População Feminina", 624))),
+         faixa_etaria = faixa_etaria$faixa_etaria,
+         ano = rep(lubridate::year(seq(as.POSIXct("1980-01-01"), by = "year", length.out = 39)), 32),
+         cod = as.factor(cod))
+
+#devtools::use_data(seade_pop_faixa_etaria)
+```
+
+***
+
+### Inspeciona tibbles
+
+```{r collapse = FALSE}
+seade_pop
+seade_pop_raw
+seade_pop_variables_names
+seade_pop_faixa_etaria
+```
+
