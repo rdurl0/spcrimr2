@@ -8,6 +8,7 @@
 #'   \item{\code{variaveis_tidy}}{Variables names in tidy format, to build an R friendly dataset}
 #'   \item{\code{variable_raw}}{Original variable names (as you can see in SSP's website)}
 #'   \item{\code{dataset}}{Character string indicating the dataset in \code{spcrimr}}
+#'   }
 #'   
 #' @source \url{http://www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx}.
 #' 

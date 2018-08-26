@@ -18,6 +18,19 @@ Actually, I only implemented data from population and crime notification.
 
 ## Installation
 
+Before installation, you will need these two packages:
+
+```{r}
+#install.packages("tidyverse")
+library(tidyverse) # The Hadley Wickham's famous package for data science in R
+
+# install.packages("devtools")
+#devtools::install_github("abjur/abjMaps")
+library(abjMaps)   # A package from Julio Trecenti wich helps a lot with cities names and mapping in Sao Paulo state
+```
+
+Finally, you can install the `spcrimr` from GitHub with: 
+
 ```{r eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("rdurl0/spcrimr")
@@ -39,7 +52,6 @@ seade_pop_cities # to load the data.frame
 Extract municipalities indexes (capital letters only, don't use special character like "Ã" or "Ç")
 
 ```{r}
-library(spcrimr)
 municipio("SAO BERNARDO DO CAMPO")
 municipio("CACAPAVA")
 ```
@@ -56,7 +68,7 @@ download_table_sp(ano = 2017,
 The `seade_pop` object has some variations that could help further analysis. If you want to see a brief description of variables on this dataset, just type:
 
 ```{r}
-seade_pop_variable_names
+seade_pop_variables_names %>% kableExtra::kable()
 ```
 
 Also, there is a collapsed version of the population data by gender and age groups:

@@ -4,7 +4,12 @@
 \name{ssp_variables_names}
 \alias{ssp_variables_names}
 \title{Variable names in SSP datasets.}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 32 rows and 3 columns.}
+\format{A \code{tibble} with 32 rows and 3 variables.
+\describe{
+  \item{\code{variaveis_tidy}}{Variables names in tidy format, to build an R friendly dataset}
+  \item{\code{variable_raw}}{Original variable names (as you can see in SSP's website)}
+  \item{\code{dataset}}{Character string indicating the dataset in \code{spcrimr}}
+  }}
 \source{
 \url{http://www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx}.
 }
