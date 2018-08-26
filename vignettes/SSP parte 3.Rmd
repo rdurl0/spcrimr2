@@ -137,7 +137,7 @@ O pacote `purrr` nos ajuda a fazer a operação para todas as tabelas simultâne
 
 ```{r message=FALSE, warning=TRUE}
 # o loop começa definindo o obj e selecionando os nomes dos arquivos...
-ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directory_path, "/", .x)) %>%
   
   # ...lê os arquivos...
   map(~readRDS(.x)) %>% 
@@ -176,16 +176,16 @@ ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directory_p
 Temos como resultado um objeto `list` com 13 `data.frames`.
 
 ```{r}
-ocorrencias_crimes %>% str(max.level = 1)
+ssp_ocorrencias_crimes %>% str(max.level = 1)
 ```
 
 
 Uma breve olhada em um deles e vemos que cada tabela tem 645 observações (uma para cada município) e as variáveis da coluna `Natureza` agora são colunas. A função abaixo junta todos os anos em uma só tabela, o número de observações aumenta para $64\times13=8.385$:
 
 ```{r message=FALSE, warning=TRUE}
-ocorrencias_crimes <- reduce(ocorrencias_crimes, ~bind_rows(.x, .y))
+ssp_ocorrencias_crimes <- reduce(ssp_ocorrencias_crimes, ~bind_rows(.x, .y))
 
-ocorrencias_crimes
+ssp_ocorrencias_crimes
 
 ```
 
@@ -197,11 +197,11 @@ Repetimos o processo para os dados de produtividade policial.
 
 - __Tidy__: A série vai de 2002 até 2014. O código abaixo vai pegar cada tabela `ano_pol_20xx` da pasta `/raw_data` e fazer a devida limpeza, padronizando nomes e número de colunas.
 
-- O objeto `produtividade_policial` é o que vai armazenar as tabelas de ocorrencias de crime em um só `data.frame`.
+- O objeto `ssp_produtividade_policial` é o que vai armazenar as tabelas de ocorrencias de crime em um só `data.frame`.
 
 ```{r message=FALSE, warning=TRUE}
 # loop
-produtividade_policial  <- map(dir(my_directory_path)[1:13], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_produtividade_policial  <- map(dir(my_directory_path)[1:13], ~ paste0(my_directory_path, "/", .x)) %>%
   map(~read_rds(.x)) %>% 
   map(~arrange(.x, Natureza, municipio)) %>% 
   map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%
@@ -226,15 +226,15 @@ produtividade_policial  <- map(dir(my_directory_path)[1:13], ~ paste0(my_directo
 ```
 
 ```{r}
-produtividade_policial %>% str(max.level = 1)
+ssp_produtividade_policial %>% str(max.level = 1)
 ```
 
 A função abaixo junta todos os anos em uma só tabela, o número de observações aumenta para $64\times13=8.385$:
 
 ```{r}
-produtividade_policial <- reduce(produtividade_policial, ~bind_rows(.x, .y))
+ssp_produtividade_policial <- reduce(ssp_produtividade_policial, ~bind_rows(.x, .y))
 
-produtividade_policial
+ssp_produtividade_policial
 ```
 
 
@@ -243,8 +243,8 @@ produtividade_policial
 Um `inner_join` para consolidar uma tabela única.
 
 ```{r}
-painel <- inner_join(produtividade_policial,
-                     ocorrencias_crimes,
+painel <- inner_join(ssp_produtividade_policial,
+                     ssp_ocorrencias_crimes,
                      by=c("nm_municip", "municipio", "ano"))
 
 painel %>% glimpse()
@@ -261,8 +261,8 @@ A transformação nos nomes das variáveis:
 
 ```{r echo=FALSE}
 variaveis <- c(
-  colnames(produtividade_policial)[4:length(produtividade_policial)],
-  colnames(ocorrencias_crimes)[4:length(ocorrencias_crimes)]
+  colnames(ssp_produtividade_policial)[4:length(ssp_produtividade_policial)],
+  colnames(ssp_ocorrencias_crimes)[4:length(ssp_ocorrencias_crimes)]
 )
 
 titulos   <- c("Nº DE ARMAS DE FOGO APREENDIDAS",
@@ -300,11 +300,23 @@ titulos   <- c("Nº DE ARMAS DE FOGO APREENDIDAS",
                )
 
 tibble(variaveis_tidy = variaveis,
-       variaveis_raw  = titulos) %>% kableExtra::kable()
+       variaveis_raw  = titulos,
+       dataset = c(rep("produtividade_policial", 13),rep("ocorrencias_crime", 19))
+       ) -> ssp_variables_names
+
+ssp_variables_names %>% kableExtra::kable()
 
 ```
 
+
+```{r echo=FALSE}
+#devtools::use_data(ssp_variables_names, overwrite = TRUE)
+#devtools::use_data(ssp_produtividade_policial, overwrite = TRUE)
+#devtools::use_data(ssp_ocorrencias_crimes, overwrite = TRUE)
+```
+
 ***
+
 ## Função `select_ssp()`
 
 ```{r eval = FALSE}
@@ -323,7 +335,6 @@ ssp("homicidio_doloso")
 
 ***
 
-
 ## Visualizando rapidamente
 
 Só para veridicar como ficou, vamos dar uma espiada nos dados. :
@@ -336,10 +347,10 @@ graficos <- map2(variaveis,
                                         y=paste0(.x))) +
                     theme_minimal() +
                     ggtitle(.y)
-             })
+             }
+)
 
-gridExtra::grid.arrange(grobs = graficos, nrow=16, ncol=2)
+gridExtra::grid.arrange(grobs=graficos, nrow=16, ncol=2)
 ```
-
 
 FIM!
