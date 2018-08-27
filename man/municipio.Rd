@@ -7,7 +7,7 @@
 municipio(x)
 }
 \arguments{
-\item{x}{a character string with the city name e.g. "SÃO PAULO"}
+\item{x}{a character string with the city name e.g. "SAO PAULO"}
 }
 \value{
 the index number of the city

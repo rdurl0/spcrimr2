@@ -70,7 +70,7 @@ download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
 #'
 #'Capital letters only, separated by spaces and without accents
 #'
-#'@param x a character string with the city name e.g. "SÃO PAULO"
+#'@param x a character string with the city name e.g. "SAO PAULO"
 #'
 #'@return the index number of the city
 #'
