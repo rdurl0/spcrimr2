@@ -77,11 +77,11 @@ download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
 municipio <- function(x){
   
   abjMaps::d_sf[[2]][[1]] %>% 
-    arrange(municipio) %>%
-    select(municipio) %>%
-    mutate(index=seq(1:645)) %>%
-    filter(municipio==x) %>%
-    select(index) %>%
+    dplyr::arrange(municipio) %>%
+    dplyr::select(municipio) %>%
+    dplyr::mutate(index=seq(1:645)) %>%
+    dplyr::filter(municipio==x) %>%
+    dplyr::select(index) %>%
     as.numeric()
   
 }
