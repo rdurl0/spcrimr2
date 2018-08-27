@@ -26,8 +26,7 @@ download_table_sp <- function(ano, municipio,
   url <- 'http://www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx'
   
   pivot <- httr::GET(url)
-  #serve apenas para pegarmos um view_state e um event_validation valido
-  
+
   view_state <- pivot %>%
     xml2::read_html() %>%
     rvest::html_nodes("input[name='__VIEWSTATE']") %>%
@@ -37,9 +36,7 @@ download_table_sp <- function(ano, municipio,
     xml2::read_html() %>%
     rvest::html_nodes("input[name='__EVENTVALIDATION']") %>%
     rvest::html_attr("value")
-  
-  
-  
+
   params <- list(`__EVENTTARGET` = type,  
                  `__EVENTARGUMENT` = "",
                  `__LASTFOCUS` = "",
@@ -54,15 +51,9 @@ download_table_sp <- function(ano, municipio,
     xml2::read_html() %>%
     rvest::html_table(dec = ',') %>%
     dplyr::first() %>%
-    #serve pra pegar apenas a primeira tabela da página, se houver mais do que uma.
-    #Estou assumindo que a tabela que eu quero é sempre a primeira.
     dplyr::mutate(municipio = municipio,
                   ano = ano)
 }
-
-download_table_sp(2015, 2, type="ctl00$conteudo$btnPolicial"
-                  )
-
 
 #'Get city index by it's name
 #'
