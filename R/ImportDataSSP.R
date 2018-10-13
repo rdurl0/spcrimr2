@@ -74,5 +74,5 @@ municipio <- function(x){
     dplyr::filter(municipio==x) %>%
     dplyr::select(index) %>%
     as.numeric()
-  
+   
 }
