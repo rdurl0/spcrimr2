@@ -90,7 +90,7 @@ my_directory_path <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/econom
 
 
 ```{r message=FALSE, warning=TRUE}
-dir(my_directory_path)[1:26]
+dir(my_directory_path)[1:32]
 ```
 
 ***
@@ -137,14 +137,14 @@ O pacote `purrr` nos ajuda a fazer a operação para todas as tabelas simultâne
 
 ```{r message=FALSE, warning=TRUE}
 # o loop começa definindo o obj e selecionando os nomes dos arquivos...
-ssp_ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_ocorrencias_crimes <- map(dir(my_directory_path)[17:32], ~ paste0(my_directory_path, "/", .x)) %>%
   
   # ...lê os arquivos...
   map(~readRDS(.x)) %>% 
   
   # ...ordena, seleciona colunas, remove caracteres indesejados...
   map(~arrange(.x, Natureza, municipio)) %>%
-  map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%
+  map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>% 
   map(~mutate(.x, #nm_municipio = nm_municipio,
               crime = crime %>%
                 tolower() %>%
@@ -159,7 +159,8 @@ ssp_ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directo
                 str_replace_all("[:blank:]", "_") %>%
                 str_replace_all("í", "i") %>%
                 str_replace_all("ã", "a") %>%
-                str_replace_all("â", "a"))) %>%
+                str_replace_all("â", "a") %>%
+                str_replace_all("á", "a"))) %>%
   
   # ...spread: cada tipo de crime vira uma variável...
   map(~spread(.x, crime, total)) %>%
@@ -168,8 +169,10 @@ ssp_ocorrencias_crimes <- map(dir(my_directory_path)[14:26], ~ paste0(my_directo
   map2(., nome_munics, ~mutate(.x, nm_municip = .y)) %>%
 
   # ...esta variável não tem em todas as tabelas, tem q excluir.
-  modify_at(.x = ., .at = c(seq(8)), .f = ~select(.x, -lesao_corporal_seguida_de_morte)) %>%
-  #???modify_at(.at = c(9:13), .f = ~mutate(.x, lesao_corporal_seguida_de_morte = c(rep(0, 645)))) %>%
+  modify_at(.x = ., .at = c(seq(8), 15,16), .f = ~select(.x, -lesao_corporal_seguida_de_morte)) %>%
+  modify_at(.x = ., .at = c(15,16), .f = ~select(.x, -estupro_de_vulneravel)) %>%
+  modify_at(.x = ., .at = c(16), .f = ~select(.x, -c(estupro, roubo_outros))) %>%
+  
   map(~select(.x, nm_municip, everything()))
 ```
 
@@ -201,7 +204,7 @@ Repetimos o processo para os dados de produtividade policial.
 
 ```{r message=FALSE, warning=TRUE}
 # loop
-ssp_produtividade_policial  <- map(dir(my_directory_path)[1:13], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_produtividade_policial  <- map(dir(my_directory_path)[1:16], ~ paste0(my_directory_path, "/", .x)) %>%
   map(~read_rds(.x)) %>% 
   map(~arrange(.x, Natureza, municipio)) %>% 
   map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%

@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Resumo
+
+## Resumo
 
 ```{r eval=T, echo=F, results='asis', fig.align='center'}
 library("DiagrammeR")
@@ -51,12 +52,17 @@ digraph boxes_and_circles {
 
 ****
 
+## População
+
 ### Parâmetros
 
 ```{r echo = FALSE}
 file_name <- "C:/Users/rauld/OneDrive/Documentos/[documentos]Raul/economia_do_crime/raw_data/seade_pop.csv"
 ```
 
+```{r eval = FALSE}
+file_name <- "C:/path/to/your/directory/raw_data/seade_pop.csv"
+```
 
 ```{r warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -152,4 +158,6 @@ seade_pop_variables_names
 seade_pop_cities
 seade_pop_state
 ```
+
+
 
