@@ -55,24 +55,3 @@ download_table_sp <- function(ano, municipio,
                   ano = ano)
 }
 
-#'Get city index by it's name
-#'
-#'Function to find the city \emph{index} in Sao Paulo state.
-#'
-#'Capital letters only, separated by spaces and without accents
-#'
-#'@param x a character string with the city name e.g. "SAO PAULO"
-#'
-#'@return the index number of the city
-#'
-municipio <- function(x){
-  
-  abjMaps::d_sf[[2]][[1]] %>% 
-    dplyr::arrange(municipio) %>%
-    dplyr::select(municipio) %>%
-    dplyr::mutate(index=seq(1:645)) %>%
-    dplyr::filter(municipio==x) %>%
-    dplyr::select(index) %>%
-    as.numeric()
-   
-}

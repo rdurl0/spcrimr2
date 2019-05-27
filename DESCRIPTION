@@ -1,17 +1,17 @@
 Package: spcrimr
 Title: Analyse crime data from SSP-SP and socioeconomic data from SEADE-SP.
 Version: 0.0.0.9000
-Authors@R: person("Raul", "de S? Durlo", email = "durlo.raul@gmail.com", role = c("aut", "cre"))
-Description: Functions to easily import, clean and visualize socioeconomic and criminality data from S?o Paulo estate in Brazil.
+Authors@R: person("Raul", "de Sa Durlo", email = "durlo.raul@gmail.com", role = c("aut", "cre"))
+Description: Functions to easily import, clean and visualize socioeconomic and criminality data from Sao Paulo estate in Brazil.
 Depends: R (>= 3.5.1)
 License: GNU GPL v3
 Encoding: UTF-8
 LazyData: true
-Imports: tidyverse,
-    xml2,
+Imports: abjMaps,
     rvest,
-    abjMaps,
-    magrittr
+    magrittr,
+    tidyverse,
+    xml2
 RoxygenNote: 6.1.1
 Suggests: knitr,
     rmarkdown,
