@@ -319,10 +319,11 @@ ssp_variables_names %>% kableExtra::kable()
 crim <- list(ssp_ocorrencias_crimes,
              ssp_produtividade_policial) %>%
   map(
-  ~mutate(.x, nm_municip = recode(nm_municip,`EMBU-GUACU` = "EMBU DAS ARTES",
-                            `EMBU DAS ARTES` = "EMBU-GUACU",
-                            `SANTA RITA D'OESTE` = "SANTA RITA DO PASSA QUATRO",
-                            `SANTA RITA DO PASSA QUATRO` = "SANTA RITA D'OESTE"))  
+  ~mutate(.x, nm_municip = recode(nm_municip,
+                                  `EMBU-GUACU` = "EMBU DAS ARTES",
+                                  `EMBU DAS ARTES` = "EMBU-GUACU",
+                                  `SANTA RITA D'OESTE` = "SANTA RITA DO PASSA QUATRO",
+                                  `SANTA RITA DO PASSA QUATRO` = "SANTA RITA D'OESTE"))  
   ) %>%
   map(~arrange(.x, nm_municip))
 
