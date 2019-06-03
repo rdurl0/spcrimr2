@@ -137,7 +137,9 @@ O pacote `purrr` nos ajuda a fazer a operação para todas as tabelas simultâne
 
 ```{r message=FALSE, warning=TRUE}
 # o loop começa definindo o obj e selecionando os nomes dos arquivos...
-ssp_ocorrencias_crimes <- map(dir(my_directory_path)[17:32], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_ocorrencias_crimes <- map(
+  dir(my_directory_path)[17:32], ~ paste0(my_directory_path, "/", .x)
+  ) %>%
   
   # ...lê os arquivos...
   map(~readRDS(.x)) %>% 
@@ -204,7 +206,9 @@ Repetimos o processo para os dados de produtividade policial.
 
 ```{r message=FALSE, warning=TRUE}
 # loop
-ssp_produtividade_policial  <- map(dir(my_directory_path)[1:16], ~ paste0(my_directory_path, "/", .x)) %>%
+ssp_produtividade_policial  <- map(
+  dir(my_directory_path)[1:16], ~ paste0(my_directory_path, "/", .x)
+  ) %>%
   map(~read_rds(.x)) %>% 
   map(~arrange(.x, Natureza, municipio)) %>% 
   map(~select(.x, municipio, ano, crime = Natureza, total = Total)) %>%
@@ -311,6 +315,21 @@ ssp_variables_names %>% kableExtra::kable()
 
 ```
 
+```{r}
+crim <- list(ssp_ocorrencias_crimes,
+             ssp_produtividade_policial) %>%
+  map(
+  ~mutate(.x, nm_municip = recode(nm_municip,`EMBU-GUACU` = "EMBU DAS ARTES",
+                            `EMBU DAS ARTES` = "EMBU-GUACU",
+                            `SANTA RITA D'OESTE` = "SANTA RITA DO PASSA QUATRO",
+                            `SANTA RITA DO PASSA QUATRO` = "SANTA RITA D'OESTE"))  
+  ) %>%
+  map(~arrange(.x, nm_municip))
+
+ssp_ocorrencias_crimes <- crim[[1]]
+ssp_produtividade_policial <- crim[[2]]
+```
+
 
 ```{r echo=FALSE}
 #devtools::use_data(ssp_variables_names, overwrite = TRUE)
@@ -320,34 +339,15 @@ ssp_variables_names %>% kableExtra::kable()
 
 ***
 
-## Função `select_ssp()`
-
-```{r eval = FALSE}
-
-# TODO !
-
-ssp <- function(x) {
-  read_rds("./data/dados_ssp") %>%
-  select(municipio, ano, x) %>%
-  mutate(ano=as.factor(ano),
-         municipio=as.factor(municipio))
-}
-
-ssp("homicidio_doloso")
-```
-
-***
-
 ## Visualizando rapidamente
 
 Só para veridicar como ficou, vamos dar uma espiada nos dados. :
 
-```{r fig.align='center', fig.height=65, fig.width=12}
+```{r fig.align='center', fig.height=65, fig.width=12, eval=FALSE}
 graficos <- map2(variaveis,
                  titulos, 
-                 ~{ggplot(painel %>% filter(nm_municip == "SAO PAULO")) + 
-                    geom_line(aes_string(x=c(2002:2014),
-                                        y=paste0(.x))) +
+                 ~{ggplot(painel %>% filter(nm_municip == "SAO PAULO"), aes(x=c(2002:2014))) + 
+                    geom_line(aes_string(y=paste0(.x))) +
                     theme_minimal() +
                     ggtitle(.y)
              }
