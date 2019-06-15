@@ -7,8 +7,7 @@ Depends: R (>= 3.5.1)
 License: GNU GPL v3
 Encoding: UTF-8
 LazyData: true
-Imports: abjMaps,
-    rvest,
+Imports: rvest,
     magrittr,
     tidyverse,
     xml2
