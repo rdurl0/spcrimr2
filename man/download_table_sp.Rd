@@ -14,8 +14,8 @@ download_table_sp(ano, municipio, type = c("ctl00$conteudo$btnPolicial",
 order)}
 
 \item{type}{a character string indicating the data resquested to the SSP's website. Use 
-\code{"ctl00$conteudo$btnMensal"} if you want to extract criminal ocurrencies or
-\code{"ctl00$conteudo$btnPolicial"} to request police indicators.}
+\code{'ctl00$conteudo$btnMensal'} if you want to extract criminal ocurrencies or
+\code{'ctl00$conteudo$btnPolicial'} to request police indicators.}
 }
 \value{
 a tibble
