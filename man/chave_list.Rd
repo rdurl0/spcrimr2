@@ -19,7 +19,7 @@ Index para parear dados
 }
 \examples{
 vetor <- c("a chave de idx sera do tamanho deste vetor", 
-           "este vetor eh tamanho 2")
+         "este vetor eh tamanho 2")
 chave_list(vetor)
 
 }
