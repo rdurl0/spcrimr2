@@ -9,10 +9,10 @@ chave_list(x, vec = seq(645))
 \arguments{
 \item{x}{e um vetor qualquer, precisamos do tamanho dele}
 
-\item{vec}{e o vetor de indexacao (1:645 municipios) que sera replicado `x` vezes}
+\item{vec}{e o vetor de indexacao (1:645 municipios) que sera replicado \code{x} vezes}
 }
 \value{
-uma `list` com dois vetores igual a `vec`.
+uma \code{list} com dois vetores igual a \code{vec}.
 }
 \description{
 Index para parear dados

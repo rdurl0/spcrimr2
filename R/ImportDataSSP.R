@@ -43,13 +43,13 @@ download_table_sp <- function(ano, municipio, type = c("ctl00$conteudo$btnPolici
 #' 
 #'@param x e um vetor qualquer, precisamos do tamanho dele
 #'
-#'@param vec e o vetor de indexacao (1:645 municipios) que sera replicado `x` vezes
+#'@param vec e o vetor de indexacao (1:645 municipios) que sera replicado \code{x} vezes
 #'
-#'@return uma `list` com dois vetores igual a `vec`.
+#'@return uma \code{list} com dois vetores igual a \code{vec}.
 #' 
 chave_list <- function(x, vec = seq(645)) {
     
-    lista <- vector("list", length(x))  # criando lista vazia!
+    lista <- vector("list", length(x))
     
     vec <- vec
     for (idx in 1:length(x)) lista[[idx]] <- vec
