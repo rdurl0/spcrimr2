@@ -55,3 +55,23 @@ download_table_sp <- function(ano, municipio,
                   ano = ano)
 }
 
+#' Index para parear dados
+#' 
+#' @param x e um vetor qualquer, precisamos do tamanho dele
+#' @param vec e o vetor de indexacao (1:645 municipios) que sera replicado `x` vezes
+#' @return uma `list` com dois vetores igual a `vec`.
+#' @examples 
+#' vetor <- c("a chave de idx sera do tamanho deste vetor", 
+#'            "este vetor eh tamanho 2")
+#' chave_list(vetor)
+#' 
+chave_list <- function(x, vec=seq(645)){
+  
+  lista <- vector("list", length(x)) # criando lista vazia!
+  
+  vec <- vec
+  for(idx in 1:length(x)) lista[[idx]] <- vec
+  
+  return(lista)
+  
+}
