@@ -17,9 +17,3 @@ uma `list` com dois vetores igual a `vec`.
 \description{
 Index para parear dados
 }
-\examples{
-vetor <- c('a chave de idx sera do tamanho deste vetor', 
-         'este vetor eh tamanho 2')
-chave_list(vetor)
-
-}
