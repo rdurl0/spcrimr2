@@ -1,4 +1,4 @@
-Package: spcrimr
+Package: spcrimr2
 Title: Analyse crime data from SSP-SP and socioeconomic data from SEADE-SP.
 Version: 0.0.0.91
 Authors@R: person("Raul", "de Sa Durlo", email = "durlo.raul@gmail.com", role = c("aut", "cre"))
