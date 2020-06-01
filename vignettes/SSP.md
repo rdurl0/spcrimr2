@@ -236,7 +236,6 @@ Os dados estão separados por ano e cada arquivo é um `data.frame` com informa�
 
 ```{r echo=FALSE}
 my_directory_path <- "./economia_do_crime/raw_data"
-
 dir(my_directory_path)[1:32]
 ```
 __Cada tipo de crime (ou de indicador de prod. policial) deve ser uma _coluna_ e cada município deve ser uma _linha_.__
@@ -414,7 +413,7 @@ ssp_produtividade_policial <- crim[[2]]
 
 Só para veridicar como ficou, vamos dar uma espiada nos dados. :
 
-```{r fig.align='center', fig.height=65, fig.width=12, eval=FALSE}
+``` r
 graficos <- map2(variaveis,
                  titulos, 
                  ~{ggplot(painel %>% filter(nm_municip == "SAO PAULO"), aes(x=c(2002:2014))) + 
