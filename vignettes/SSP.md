@@ -31,11 +31,14 @@ rm(list=(ls()))
 library(tidyverse)
 library(rvest)
 library(xml2)
-      # função
+
+# função
+  # type = ctl00$conteudo$btnMensal"   - Ocorrências por mês  
+  # type = ctl00$conteudo$btnPolicial" - Produtividade policial
+
 download_table_sp <- function(ano, municipio,
                               type = "ctl00$conteudo$btnPolicial"){
-  # type = ctl00$conteudo$btnMensal"   - Ocorrências por mês                                # type = ctl00$conteudo$btnPolicial" - Produtividade policial
-  
+    
   url <- 'http://www.ssp.sp.gov.br/Estatistica/Pesquisa.aspx'
   
   pivot <- httr::GET(url)
@@ -75,7 +78,6 @@ download_table_sp <- function(ano, municipio,
 
 ****
 
-
 ## Testando a função: 
 
 Automatizando os parâmetros
@@ -83,6 +85,7 @@ Automatizando os parâmetros
 ``` r
 # extraindo o ano atual
 ano_atual <- format(Sys.Date(), "%Y")
+
 # a função municipio(x) retorna número índice do municipio
 municipio <- function(x){
   
@@ -124,7 +127,6 @@ download_table_sp(ano = ano_atual,
                   type = "ctl00$conteudo$btnMensal") %>% 
   kableExtra::kable()
 ```
-
 ****
 
 ## Referências
