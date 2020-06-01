@@ -1,9 +1,9 @@
 Raspagem e limpeza de dados da SSP-SP
 ================
 
-- [Parte 1](#parte1)
-- [Parte 2](#parte2)
-- [Parte 3](#parte3)
+- [Parte 1](#parte-1)
+- [Parte 2](#parte-2)
+- [Parte 3](#parte-3)
 - [Referências](#referencias)
 
 # Parte 1
