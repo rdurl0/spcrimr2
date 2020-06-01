@@ -1,6 +1,11 @@
 Raspagem e limpeza de dados da SSP-SP
 ================
 
+- [Parte 1](#parte1)
+- [Parte 2](#parte2)
+- [Parte 3](#parte3)
+- [Referências](#referencias)
+
 # Parte 1
 
 ## Resumo
@@ -122,12 +127,6 @@ download_table_sp(ano = ano_atual,
   kableExtra::kable()
 ```
 
-## Referências
-
-* __Web scraping do site da Secretaria de Segurança Pública de São Paulo__. [_Blog do Curso R_](http://curso-r.com/blog/2017/05/19/2017-05-19-scrapper-ssp/). 2017. _último acesso em: 11/07/2018_
-
-* Secretaria de Segurança Pública do estado de São Paulo. <http://www.ssp.sp.gov.br>.
-
 ******
 
 # Parte 2
@@ -218,3 +217,9 @@ policial write_rds(D, "./raw_data/ano_pol_2002")
 #ano2014") # exemplo:
 ocorrencia criminal write_rds(D, "./raw_data/ano2014")`
 ```
+
+# Referências
+
+* __Web scraping do site da Secretaria de Segurança Pública de São Paulo__. [_Blog do Curso R_](http://curso-r.com/blog/2017/05/19/2017-05-19-scrapper-ssp/). 2017. _último acesso em: 11/07/2018_
+
+* Secretaria de Segurança Pública do estado de São Paulo. <http://www.ssp.sp.gov.br>.
